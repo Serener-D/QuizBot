@@ -35,8 +35,6 @@ public class ConversationStateHolder {
         flashCardMap.remove(chatId);
     }
 
-
-    enum ConversationState {IDLE, WAITING_CATEGORY, WAITING_CARD_ANSWER, TAKING_QUIZ}
-
+    public enum ConversationState {IDLE, WAITING_CATEGORY, WAITING_CARD_ANSWER, RECEIVING_CARDS, TAKING_QUIZ}
 
 }
