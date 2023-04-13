@@ -13,26 +13,24 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 
 public class BotInit extends TelegramLongPollingBot {
 
-    private final Map<Long, ConversationState> conversationStateMap = new HashMap<>();
-    private final Map<Long, Queue<FlashCard>> conversationContextMap = new HashMap<>();
     private static final String DEFAULT_RESPONSE = "Something went wrong";
 
+    private final ConversationStateHolder conversationStateHolder;
     private final CommandHandler commandHandler;
     private final CallbackHandler callbackHandler;
 
 
-    public BotInit(String botToken, CommandHandler commandHandler, CallbackHandler callbackHandler) {
+    public BotInit(String botToken, CommandHandler commandHandler, CallbackHandler callbackHandler, ConversationStateHolder conversationStateHolder) {
         super(botToken);
         this.commandHandler = commandHandler;
         this.callbackHandler = callbackHandler;
+        this.conversationStateHolder = conversationStateHolder;
     }
 
     @Override
@@ -77,25 +75,25 @@ public class BotInit extends TelegramLongPollingBot {
 
     private void saveCardAnswerQuestionToContext(Update update) {
         Long chatId = update.getMessage().getChatId();
-        conversationStateMap.put(chatId, ConversationState.WAITING_CARD_ANSWER);
+        conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.WAITING_CARD_ANSWER);
         Queue<FlashCard> flashCardQueue = new LinkedList<>();
         flashCardQueue.add(FlashCard.builder().chatId(chatId).question(update.getMessage().getText()).build());
-        conversationContextMap.put(chatId, flashCardQueue);
+        conversationStateHolder.putCardQueue(chatId, flashCardQueue);
     }
 
     private void saveCardAnswerToContext(Update update) {
         Long chatId = update.getMessage().getChatId();
-        conversationStateMap.put(chatId, ConversationState.WAITING_CATEGORY);
-        conversationContextMap.get(chatId).element().setAnswer(update.getMessage().getText());
+        conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.WAITING_CATEGORY);
+        conversationStateHolder.getCardQueue(chatId).element().setAnswer(update.getMessage().getText());
     }
 
     private void saveCardToDatabase(Update update) {
         Long chatId = update.getMessage().getChatId();
-        FlashCard flashCard = conversationContextMap.get(chatId).poll();
+        FlashCard flashCard = conversationStateHolder.getCardQueue(chatId).poll();
         flashCard.setCategory(update.getMessage().getText());
         FlashCardDao.save(flashCard);
-        conversationStateMap.remove(chatId);
-        conversationContextMap.remove(chatId);
+        conversationStateHolder.clearState(chatId);
+        conversationStateHolder.clearCardQueue(chatId);
     }
 
     private boolean isCommand(Update update) {
@@ -108,23 +106,21 @@ public class BotInit extends TelegramLongPollingBot {
 
     private boolean isNewCardReceived(Update update) {
         Long chatId = update.getMessage().getChatId();
-        return !update.getMessage().isCommand() && (!conversationStateMap.containsKey(chatId)
-                || conversationStateMap.get(chatId) == ConversationState.IDLE);
+        return !update.getMessage().isCommand() && (conversationStateHolder.getState(chatId) == null
+                || conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.IDLE);
     }
 
     private boolean isWaitingCategoryForNewCard(Long chatId) {
-        return conversationStateMap.get(chatId) == ConversationState.WAITING_CATEGORY;
+        return conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.WAITING_CATEGORY;
     }
 
     private boolean isWaitingAnswerNewCard(Long chatId) {
-        return conversationStateMap.get(chatId) == ConversationState.WAITING_CARD_ANSWER;
+        return conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.WAITING_CARD_ANSWER;
     }
 
     @Override
     public String getBotUsername() {
         return "learn_quiz_bot";
     }
-
-    enum ConversationState {IDLE, WAITING_CATEGORY, WAITING_CARD_ANSWER, TAKING_QUIZ}
 
 }
