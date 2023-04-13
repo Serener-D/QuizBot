@@ -14,7 +14,7 @@ public class CallbackHandler {
     public Response handle(Callback callback, Long chatId, String arguments) {
         return switch (callback) {
             case GET -> get(Long.parseLong(arguments));
-            default -> Response.builder().message("Unknown callback").build();
+            case DELETE -> delete(Long.parseLong(arguments));
         };
     }
 
@@ -32,7 +32,13 @@ public class CallbackHandler {
                 .message("Question: " + flashCard.getQuestion() + "\nAnswer: " + flashCard.getAnswer() + "\nCategory: " + flashCard.getCategory())
                 .replyMarkup(keyboardMarkup)
                 .build();
+    }
 
+    private Response delete(Long cardId) {
+        FlashCardDao.delete(cardId);
+        return Response.builder()
+                .message("Card deleted")
+                .build();
     }
 
 }

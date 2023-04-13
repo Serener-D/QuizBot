@@ -32,6 +32,24 @@ public class FlashCardDao {
         }
     }
 
+    public static void delete(Long cardId) {
+        Transaction transaction = null;
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.createQuery("DELETE FROM FlashCard c WHERE c.id=:id")
+                    .setParameter("id", cardId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (PersistenceException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+    }
+
     public static List<FlashCard> getAllByChatId(Long chatId) {
         Transaction transaction = null;
         try {
