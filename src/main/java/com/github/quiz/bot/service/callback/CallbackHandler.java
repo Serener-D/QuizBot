@@ -41,7 +41,7 @@ public class CallbackHandler {
         keyboardMarkup.setKeyboard(keyboard);
 
         return Response.builder()
-                .message("Question: " + flashCard.getQuestion() + "\nAnswer: " + flashCard.getAnswer() + "\nCategory: " + flashCard.getCategory())
+                .message("Question:\n" + flashCard.getQuestion() + "\n\nAnswer:\n" + flashCard.getAnswer() + "\n\nCategory:\n" + flashCard.getCategory())
                 .replyMarkup(keyboardMarkup)
                 .build();
     }
@@ -65,18 +65,18 @@ public class CallbackHandler {
     private Response printNextCard(Long chatId) {
         Queue<FlashCard> cardsQueue = conversationStateHolder.getCardQueue(chatId);
         FlashCard previousCard = cardsQueue.poll();
-        String text = "Answer: " + Optional.ofNullable(previousCard).map(FlashCard::getAnswer);
+        String text = "Answer:\n" + Optional.ofNullable(previousCard).map(FlashCard::getAnswer).orElse(null);
 
         Response.ResponseBuilder responseBuilder = Response.builder();
         if (!cardsQueue.isEmpty() && cardsQueue instanceof LinkedList<FlashCard> cardsList) {
             FlashCard nextCard = cardsQueue.element();
-            text += "\n\nNext question: " + nextCard.getQuestion();
+            text += "\n\nNext question:\n" + nextCard.getQuestion();
             InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cardsList, chatId);
             responseBuilder.replyMarkup(keyboardMarkup);
         } else {
             conversationStateHolder.clearState(chatId);
             conversationStateHolder.clearCardQueue(chatId);
-            text = "End of quiz";
+            text += "\n\nEnd of quiz.";
         }
         return responseBuilder.message(text).build();
     }

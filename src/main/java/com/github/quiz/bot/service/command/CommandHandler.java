@@ -36,7 +36,7 @@ public class CommandHandler {
         String text;
         Response.ResponseBuilder responseBuilder = Response.builder();
         if (!cards.isEmpty()) {
-            text = "Question: " + cards.get(0).getQuestion();
+            text = "Question:\n" + cards.get(0).getQuestion();
             InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
             responseBuilder.replyMarkup(keyboardMarkup);
         } else {
