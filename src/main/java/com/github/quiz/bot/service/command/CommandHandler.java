@@ -17,6 +17,7 @@ public class CommandHandler {
     public Response handle(Command command, Long chatId) {
         return switch (command) {
             case ALL -> getAll(chatId);
+            case RANDOMQUIZ -> startRandomQuiz(chatId);
             default -> Response.builder().message("Unknown command").build();
         };
     }
@@ -28,6 +29,20 @@ public class CommandHandler {
                 .message("Saved cards:")
                 .replyMarkup(keyboard)
                 .build();
+    }
+
+    private Response startRandomQuiz(Long chatId) {
+        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatId(chatId);
+        String text;
+        Response.ResponseBuilder responseBuilder = Response.builder();
+        if (!cards.isEmpty()) {
+            text = "Question: " + cards.get(0).getQuestion();
+            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
+            responseBuilder.replyMarkup(keyboardMarkup);
+        } else {
+            text = "You don't have any cards saved";
+        }
+        return responseBuilder.message(text).build();
     }
 
 }

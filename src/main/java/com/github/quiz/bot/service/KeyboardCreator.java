@@ -41,6 +41,23 @@ public class KeyboardCreator {
         return keyboardMarkup;
     }
 
+    public InlineKeyboardMarkup createRandomQuizKeyboard(List<FlashCard> cards, Long chatId) {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text("Next")
+                // FIXME useless concatenation
+                .callbackData(Callback.NEXT_CARD + " " + chatId)
+                .build();
+        List<InlineKeyboardButton> buttonRow = List.of(button);
+        keyboard.add(buttonRow);
+        keyboardMarkup.setKeyboard(keyboard);
+
+        conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.TAKING_QUIZ);
+        conversationStateHolder.putCardQueue(chatId, new LinkedList<>(cards));
+        return keyboardMarkup;
+    }
+
     private void paginate(List<List<InlineKeyboardButton>> keyboard, List<FlashCard> cards) {
         Long chatId = cards.get(0).getChatId();
         InlineKeyboardButton button = InlineKeyboardButton.builder()

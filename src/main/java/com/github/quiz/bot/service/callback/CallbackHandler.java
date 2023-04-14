@@ -10,7 +10,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
 
 @RequiredArgsConstructor
 public class CallbackHandler {
@@ -22,6 +25,7 @@ public class CallbackHandler {
         return switch (callback) {
             case GET -> get(Long.parseLong(arguments));
             case NEXT_PAGE -> printPage(chatId);
+            case NEXT_CARD -> printNextCard(chatId);
             case DELETE -> delete(Long.parseLong(arguments));
         };
     }
@@ -56,6 +60,25 @@ public class CallbackHandler {
                 .message("Saved cards:")
                 .replyMarkup(keyboard)
                 .build();
+    }
+
+    private Response printNextCard(Long chatId) {
+        Queue<FlashCard> cardsQueue = conversationStateHolder.getCardQueue(chatId);
+        FlashCard previousCard = cardsQueue.poll();
+        String text = "Answer: " + Optional.ofNullable(previousCard).map(FlashCard::getAnswer);
+
+        Response.ResponseBuilder responseBuilder = Response.builder();
+        if (!cardsQueue.isEmpty() && cardsQueue instanceof LinkedList<FlashCard> cardsList) {
+            FlashCard nextCard = cardsQueue.element();
+            text += "\n\nNext question: " + nextCard.getQuestion();
+            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cardsList, chatId);
+            responseBuilder.replyMarkup(keyboardMarkup);
+        } else {
+            conversationStateHolder.clearState(chatId);
+            conversationStateHolder.clearCardQueue(chatId);
+            text = "End of quiz";
+        }
+        return responseBuilder.message(text).build();
     }
 
 }
