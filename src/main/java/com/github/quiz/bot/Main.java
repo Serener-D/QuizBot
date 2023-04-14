@@ -15,7 +15,7 @@ public class Main {
         ConversationStateHolder conversationStateHolder = new ConversationStateHolder();
         KeyboardCreator keyboardCreator = new KeyboardCreator(conversationStateHolder);
         BotInit botInit = new BotInit("6098897440:AAFiAazmAHe_ud-blP21M3LAsMOejrbH4hQ",
-                new CommandHandler(keyboardCreator),
+                new CommandHandler(conversationStateHolder, keyboardCreator),
                 new CallbackHandler(conversationStateHolder, keyboardCreator),
                 conversationStateHolder);
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);

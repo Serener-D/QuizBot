@@ -2,8 +2,8 @@ package com.github.quiz.bot.service.command;
 
 public enum Command {
 
-    ALL,
-    RANDOMQUIZ,
+    GET_CARDS,
+    RANDOM_QUIZ,
     QUIZ,
     STOP,
 

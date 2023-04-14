@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Queue;
 
 @RequiredArgsConstructor
@@ -65,7 +64,14 @@ public class CallbackHandler {
     private Response printNextCard(Long chatId) {
         Queue<FlashCard> cardsQueue = conversationStateHolder.getCardQueue(chatId);
         FlashCard previousCard = cardsQueue.poll();
-        String text = "Answer:\n" + Optional.ofNullable(previousCard).map(FlashCard::getAnswer).orElse(null);
+
+        // fixme refactor this
+        String text = "Answer:\n";
+        if (previousCard != null) {
+            previousCard.setShowedCounter(previousCard.getShowedCounter() + 1);
+            FlashCardDao.update(previousCard);
+            text += previousCard.getAnswer();
+        }
 
         Response.ResponseBuilder responseBuilder = Response.builder();
         if (!cardsQueue.isEmpty() && cardsQueue instanceof LinkedList<FlashCard> cardsList) {

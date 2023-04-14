@@ -61,7 +61,7 @@ public class KeyboardCreator {
     private void paginate(List<List<InlineKeyboardButton>> keyboard, List<FlashCard> cards) {
         Long chatId = cards.get(0).getChatId();
         InlineKeyboardButton button = InlineKeyboardButton.builder()
-                .text("next page")
+                .text("> next page")
                 // FIXME useless concatenation
                 .callbackData(Callback.NEXT_PAGE.name() + " " + chatId)
                 .build();

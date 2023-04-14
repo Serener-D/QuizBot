@@ -31,7 +31,7 @@ public class FlashCard {
     private String answer;
     private String category;
     @Column(name = "showed_counter")
-    private Integer showedCounter;
+    private int showedCounter;
 
 }
 

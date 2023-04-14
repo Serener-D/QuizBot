@@ -10,6 +10,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +25,21 @@ public class FlashCardDao {
             transaction = session.getTransaction();
             transaction.begin();
             session.persist(flashCard);
+            transaction.commit();
+        } catch (PersistenceException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+    }
+
+    public static void update(FlashCard flashCard) {
+        Transaction transaction = null;
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.merge(flashCard);
             transaction.commit();
         } catch (PersistenceException e) {
             if (transaction != null) {
@@ -102,7 +118,8 @@ public class FlashCardDao {
                             "WHERE c.chatId=:chatId " +
                             "ORDER BY c.showedCounter ASC", FlashCard.class)
                     .setParameter("chatId", chatId)
-                    .setMaxResults(20);
+                    // fixme should be defined ins service
+                    .setMaxResults(10);
             List<FlashCard> cards = typedQuery.getResultList();
             transaction.commit();
             return cards;
@@ -114,7 +131,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<FlashCard> getLeastUsedByChatId(Long chatId, String category) {
+    public static List<FlashCard> getLeastUsedByChatIdAndCategory(Long chatId, String category) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -127,8 +144,12 @@ public class FlashCardDao {
                             "ORDER BY c.showedCounter ASC", FlashCard.class)
                     .setParameter("chatId", chatId)
                     .setParameter("category", category)
-                    .setMaxResults(20);
+                    // fixme should be defined ins service
+                    .setMaxResults(10);
             List<FlashCard> cards = typedQuery.getResultList();
+            // fixme should be shuffled ins service
+            Collections.shuffle(cards);
+
             transaction.commit();
             return cards;
         } catch (PersistenceException e) {
