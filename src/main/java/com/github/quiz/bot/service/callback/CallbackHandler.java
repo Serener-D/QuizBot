@@ -20,6 +20,7 @@ public class CallbackHandler {
 
     private final ConversationStateHolder conversationStateHolder;
     private final KeyboardCreator keyboardCreator;
+    private final FlashCardDao flashCardDao;
 
     public Response handle(Callback callback, Long chatId, String arguments) {
         return switch (callback) {
@@ -32,7 +33,7 @@ public class CallbackHandler {
     }
 
     private Response get(Long cardId) {
-        FlashCard flashCard = FlashCardDao.get(cardId);
+        FlashCard flashCard = flashCardDao.get(cardId);
 
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
@@ -48,7 +49,7 @@ public class CallbackHandler {
     }
 
     private Response delete(Long cardId) {
-        FlashCardDao.delete(cardId);
+        flashCardDao.delete(cardId);
         return Response.builder()
                 .message("Card deleted")
                 .build();
@@ -71,7 +72,7 @@ public class CallbackHandler {
         String text = "Answer:\n";
         if (previousCard != null) {
             previousCard.setShowedCounter(previousCard.getShowedCounter() + 1);
-            FlashCardDao.update(previousCard);
+            flashCardDao.update(previousCard);
             text += previousCard.getAnswer();
         }
 
@@ -90,9 +91,9 @@ public class CallbackHandler {
     }
 
     private Response startCategoryQuiz(Long chatId, String category) {
-        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatIdAndCategory(chatId, category, Response.QUIZ_SIZE);
+        List<FlashCard> cards = flashCardDao.getLeastUsedByChatIdAndCategory(chatId, category, Response.QUIZ_SIZE);
         Collections.shuffle(cards);
-        return Response.createQuizResponse(chatId, cards, keyboardCreator);
+        return Response.createQuizResponse(chatId, cards, keyboardCreator, flashCardDao);
     }
 
 }

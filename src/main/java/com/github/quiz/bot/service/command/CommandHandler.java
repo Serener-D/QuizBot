@@ -16,6 +16,7 @@ public class CommandHandler {
 
     private final ConversationStateHolder conversationStateHolder;
     private final KeyboardCreator keyboardCreator;
+    private final FlashCardDao flashCardDao;
 
     public Response handle(Command command, Long chatId) {
         return switch (command) {
@@ -27,7 +28,7 @@ public class CommandHandler {
     }
 
     private Response getCards(Long chatId) {
-        List<FlashCard> cards = FlashCardDao.getAllByChatId(chatId);
+        List<FlashCard> cards = flashCardDao.getAllByChatId(chatId);
         InlineKeyboardMarkup keyboard = keyboardCreator.createAllCardsKeyboard(cards, chatId);
         return Response.builder()
                 .message("Saved cards:")
@@ -36,13 +37,13 @@ public class CommandHandler {
     }
 
     private Response startRandomQuiz(Long chatId) {
-        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatId(chatId, Response.QUIZ_SIZE);
+        List<FlashCard> cards = flashCardDao.getLeastUsedByChatId(chatId, Response.QUIZ_SIZE);
         Collections.shuffle(cards);
-        return Response.createQuizResponse(chatId, cards, keyboardCreator);
+        return Response.createQuizResponse(chatId, cards, keyboardCreator, flashCardDao);
     }
 
     private Response startCategoryQuiz(Long chatId) {
-        List<String> categories = FlashCardDao.getAllCategoriesByChatId(chatId);
+        List<String> categories = flashCardDao.getAllCategoriesByChatId(chatId);
         InlineKeyboardMarkup keyboard = keyboardCreator.createCategoryKeyboard(categories);
         return Response.builder()
                 .message("Select category:")

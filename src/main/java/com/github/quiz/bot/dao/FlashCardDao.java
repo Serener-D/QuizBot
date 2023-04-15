@@ -1,9 +1,9 @@
 package com.github.quiz.bot.dao;
 
-import com.github.quiz.bot.config.DatabaseConfig;
 import com.github.quiz.bot.entity.FlashCard;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,11 +13,12 @@ import org.hibernate.query.Query;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 public class FlashCardDao {
 
-    private static final SessionFactory sessionFactory = DatabaseConfig.getSessionFactory();
+    private final SessionFactory sessionFactory;
 
-    public static void save(FlashCard flashCard) {
+    public void save(FlashCard flashCard) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -32,7 +33,7 @@ public class FlashCardDao {
         }
     }
 
-    public static void update(FlashCard flashCard) {
+    public void update(FlashCard flashCard) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -47,7 +48,7 @@ public class FlashCardDao {
         }
     }
 
-    public static void delete(Long cardId) {
+    public void delete(Long cardId) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -65,7 +66,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<FlashCard> getAllByChatId(Long chatId) {
+    public List<FlashCard> getAllByChatId(Long chatId) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -85,7 +86,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<String> getAllCategoriesByChatId(Long chatId) {
+    public List<String> getAllCategoriesByChatId(Long chatId) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -105,7 +106,7 @@ public class FlashCardDao {
         }
     }
 
-    public static FlashCard get(Long cardId) {
+    public FlashCard get(Long cardId) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -125,7 +126,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<FlashCard> getLeastUsedByChatId(Long chatId, int limit) {
+    public List<FlashCard> getLeastUsedByChatId(Long chatId, int limit) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -149,7 +150,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<FlashCard> getLeastUsedByChatIdAndCategory(Long chatId, String category, int limit) {
+    public List<FlashCard> getLeastUsedByChatIdAndCategory(Long chatId, String category, int limit) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();

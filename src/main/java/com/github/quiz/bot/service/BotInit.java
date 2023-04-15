@@ -24,13 +24,15 @@ public class BotInit extends TelegramLongPollingBot {
     private final ConversationStateHolder conversationStateHolder;
     private final CommandHandler commandHandler;
     private final CallbackHandler callbackHandler;
+    private final FlashCardDao flashCardDao;
 
 
-    public BotInit(String botToken, CommandHandler commandHandler, CallbackHandler callbackHandler, ConversationStateHolder conversationStateHolder) {
+    public BotInit(String botToken, CommandHandler commandHandler, CallbackHandler callbackHandler, ConversationStateHolder conversationStateHolder, FlashCardDao flashCardDao) {
         super(botToken);
         this.commandHandler = commandHandler;
         this.callbackHandler = callbackHandler;
         this.conversationStateHolder = conversationStateHolder;
+        this.flashCardDao = flashCardDao;
     }
 
     @Override
@@ -91,7 +93,7 @@ public class BotInit extends TelegramLongPollingBot {
         Long chatId = update.getMessage().getChatId();
         FlashCard flashCard = conversationStateHolder.getCardQueue(chatId).poll();
         flashCard.setCategory(update.getMessage().getText());
-        FlashCardDao.save(flashCard);
+        flashCardDao.save(flashCard);
         conversationStateHolder.clearState(chatId);
         conversationStateHolder.clearCardQueue(chatId);
     }

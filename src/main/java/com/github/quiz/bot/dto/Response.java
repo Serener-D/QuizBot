@@ -21,13 +21,14 @@ public class Response {
 
     public static Response createQuizResponse(Long chatId,
                                               List<FlashCard> cards,
-                                              KeyboardCreator keyboardCreator) {
+                                              KeyboardCreator keyboardCreator,
+                                              FlashCardDao flashCardDao) {
         String text;
         Response.ResponseBuilder responseBuilder = Response.builder();
         if (!cards.isEmpty()) {
             FlashCard card = cards.get(0);
             card.setShowedCounter(card.getShowedCounter() + 1);
-            FlashCardDao.update(card);
+            flashCardDao.update(card);
 
             text = "Question:\n" + card.getQuestion();
             InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
