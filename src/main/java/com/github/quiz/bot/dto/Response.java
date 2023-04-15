@@ -27,8 +27,7 @@ public class Response {
         Response.ResponseBuilder responseBuilder = Response.builder();
         if (!cards.isEmpty()) {
             FlashCard card = cards.get(0);
-            card.setShowedCounter(card.getShowedCounter() + 1);
-            flashCardDao.update(card);
+            flashCardDao.incrementShowedCounter(card);
 
             text = "Question:\n" + card.getQuestion();
             InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
