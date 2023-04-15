@@ -26,6 +26,7 @@ public class CallbackHandler {
             case NEXT_PAGE -> printPage(chatId);
             case NEXT_CARD -> printNextCard(chatId);
             case DELETE -> delete(Long.parseLong(arguments));
+            case CATEGORY -> startCategoryQuiz(chatId, arguments);
         };
     }
 
@@ -85,6 +86,11 @@ public class CallbackHandler {
             text += "\n\nEnd of quiz.";
         }
         return responseBuilder.message(text).build();
+    }
+
+    private Response startCategoryQuiz(Long chatId, String category) {
+        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatIdAndCategory(chatId, category);
+        return Response.createQuizResponse(chatId, cards, keyboardCreator);
     }
 
 }

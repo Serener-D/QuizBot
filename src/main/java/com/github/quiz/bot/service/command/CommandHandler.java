@@ -21,7 +21,7 @@ public class CommandHandler {
             case GET_CARDS -> getCards(chatId);
             case RANDOM_QUIZ -> startRandomQuiz(chatId);
             case STOP -> stop(chatId);
-            default -> Response.builder().message("Unknown command").build();
+            case QUIZ -> startCategoryQuiz(chatId);
         };
     }
 
@@ -36,20 +36,16 @@ public class CommandHandler {
 
     private Response startRandomQuiz(Long chatId) {
         List<FlashCard> cards = FlashCardDao.getLeastUsedByChatId(chatId);
-        String text;
-        Response.ResponseBuilder responseBuilder = Response.builder();
-        if (!cards.isEmpty()) {
-            FlashCard card = cards.get(0);
-            card.setShowedCounter(card.getShowedCounter() + 1);
-            FlashCardDao.update(card);
+        return Response.createQuizResponse(chatId, cards, keyboardCreator);
+    }
 
-            text = "Question:\n" + card.getQuestion();
-            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
-            responseBuilder.replyMarkup(keyboardMarkup);
-        } else {
-            text = "You don't have any cards saved";
-        }
-        return responseBuilder.message(text).build();
+    private Response startCategoryQuiz(Long chatId) {
+        List<String> categories = FlashCardDao.getAllCategoriesByChatId(chatId);
+        InlineKeyboardMarkup keyboard = keyboardCreator.createCategoryKeyboard(categories);
+        return Response.builder()
+                .message("Select category:")
+                .replyMarkup(keyboard)
+                .build();
     }
 
     private Response stop(Long chatId) {

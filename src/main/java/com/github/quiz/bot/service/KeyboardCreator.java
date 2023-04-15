@@ -41,6 +41,22 @@ public class KeyboardCreator {
         return keyboardMarkup;
     }
 
+    public InlineKeyboardMarkup createCategoryKeyboard(List<String> categories) {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        for (String category : categories) {
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                    .text(category)
+                    .callbackData(Callback.CATEGORY + " " + category)
+                    .build();
+            List<InlineKeyboardButton> buttonRow = List.of(button);
+            keyboard.add(buttonRow);
+        }
+        keyboardMarkup.setKeyboard(keyboard);
+        return keyboardMarkup;
+    }
+
     public InlineKeyboardMarkup createRandomQuizKeyboard(List<FlashCard> cards, Long chatId) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();

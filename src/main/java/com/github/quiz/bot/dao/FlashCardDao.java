@@ -86,6 +86,26 @@ public class FlashCardDao {
         }
     }
 
+    public static List<String> getAllCategoriesByChatId(Long chatId) {
+        Transaction transaction = null;
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            transaction = session.getTransaction();
+            transaction.begin();
+            TypedQuery<String> typedQuery = session
+                    .createQuery("SELECT DISTINCT(c.category) FROM FlashCard c WHERE c.chatId=:chatId", String.class)
+                    .setParameter("chatId", chatId);
+            List<String> categories = typedQuery.getResultList();
+            transaction.commit();
+            return categories;
+        } catch (PersistenceException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+    }
+
     public static FlashCard get(Long cardId) {
         Transaction transaction = null;
         try {
