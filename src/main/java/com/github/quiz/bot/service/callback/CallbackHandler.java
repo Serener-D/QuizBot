@@ -72,8 +72,7 @@ public class CallbackHandler {
         // fixme refactor this
         String text = "Answer:\n";
         if (previousCard != null) {
-            previousCard.setShowedCounter(previousCard.getShowedCounter() + 1);
-            flashCardDao.update(previousCard);
+            flashCardDao.incrementShowedCounter(previousCard);
             text += previousCard.getAnswer();
         }
 

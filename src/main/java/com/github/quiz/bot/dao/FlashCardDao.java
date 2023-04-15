@@ -48,6 +48,11 @@ public class FlashCardDao {
         }
     }
 
+    public void incrementShowedCounter(FlashCard flashCard) {
+        flashCard.setShowedCounter(flashCard.getShowedCounter() + 1);
+        update(flashCard);
+    }
+
     public void delete(Long cardId) {
         Transaction transaction = null;
         try {
