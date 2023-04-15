@@ -52,10 +52,16 @@ public class CommandHandler {
     }
 
     private Response stop(Long chatId) {
-        conversationStateHolder.clearState(chatId);
-        conversationStateHolder.clearCardQueue(chatId);
+        String message;
+        if (conversationStateHolder.getState(chatId) != null || conversationStateHolder.getCardQueue(chatId) != null) {
+            conversationStateHolder.clearState(chatId);
+            conversationStateHolder.clearCardQueue(chatId);
+            message = "Quiz stopped.";
+        } else {
+            message = "No active quiz.";
+        }
         return Response.builder()
-                .message("Quiz stopped.")
+                .message(message)
                 .build();
     }
 

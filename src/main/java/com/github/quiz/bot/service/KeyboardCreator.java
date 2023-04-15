@@ -62,8 +62,7 @@ public class KeyboardCreator {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         InlineKeyboardButton button = InlineKeyboardButton.builder()
                 .text("Next")
-                // FIXME useless concatenation
-                .callbackData(Callback.NEXT_CARD + " " + chatId)
+                .callbackData(Callback.NEXT_CARD.name())
                 .build();
         List<InlineKeyboardButton> buttonRow = List.of(button);
         keyboard.add(buttonRow);
@@ -78,8 +77,7 @@ public class KeyboardCreator {
         Long chatId = cards.get(0).getChatId();
         InlineKeyboardButton button = InlineKeyboardButton.builder()
                 .text("> next page")
-                // FIXME useless concatenation
-                .callbackData(Callback.NEXT_PAGE.name() + " " + chatId)
+                 .callbackData(Callback.NEXT_PAGE.name())
                 .build();
         List<InlineKeyboardButton> buttonRow = List.of(button);
         keyboard.add(buttonRow);

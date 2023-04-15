@@ -46,7 +46,8 @@ public class BotInit extends TelegramLongPollingBot {
         } else if (isCallback(update)) {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
             String[] data = update.getCallbackQuery().getData().split(" ");
-            Response response = callbackHandler.handle(Callback.valueOf(data[0]), chatId, data[1]);
+            String arguments = data.length > 1 ? data[1] : null;
+            Response response = callbackHandler.handle(Callback.valueOf(data[0]), chatId, arguments);
             executeResponse(response, chatId);
         } else {
             handleMessage(update);

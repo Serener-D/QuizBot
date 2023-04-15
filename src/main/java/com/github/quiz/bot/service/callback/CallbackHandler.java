@@ -6,6 +6,7 @@ import com.github.quiz.bot.entity.FlashCard;
 import com.github.quiz.bot.service.ConversationStateHolder;
 import com.github.quiz.bot.service.KeyboardCreator;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -22,7 +23,7 @@ public class CallbackHandler {
     private final KeyboardCreator keyboardCreator;
     private final FlashCardDao flashCardDao;
 
-    public Response handle(Callback callback, Long chatId, String arguments) {
+    public Response handle(Callback callback, Long chatId, @Nullable String arguments) {
         return switch (callback) {
             case GET -> get(Long.parseLong(arguments));
             case NEXT_PAGE -> printPage(chatId);
