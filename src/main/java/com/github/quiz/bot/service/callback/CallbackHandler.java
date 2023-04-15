@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -89,7 +90,8 @@ public class CallbackHandler {
     }
 
     private Response startCategoryQuiz(Long chatId, String category) {
-        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatIdAndCategory(chatId, category);
+        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatIdAndCategory(chatId, category, Response.QUIZ_SIZE);
+        Collections.shuffle(cards);
         return Response.createQuizResponse(chatId, cards, keyboardCreator);
     }
 

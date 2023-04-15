@@ -10,7 +10,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -126,7 +125,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<FlashCard> getLeastUsedByChatId(Long chatId) {
+    public static List<FlashCard> getLeastUsedByChatId(Long chatId, int limit) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -138,8 +137,7 @@ public class FlashCardDao {
                             "WHERE c.chatId=:chatId " +
                             "ORDER BY c.showedCounter ASC", FlashCard.class)
                     .setParameter("chatId", chatId)
-                    // fixme should be defined ins service
-                    .setMaxResults(10);
+                    .setMaxResults(limit);
             List<FlashCard> cards = typedQuery.getResultList();
             transaction.commit();
             return cards;
@@ -151,7 +149,7 @@ public class FlashCardDao {
         }
     }
 
-    public static List<FlashCard> getLeastUsedByChatIdAndCategory(Long chatId, String category) {
+    public static List<FlashCard> getLeastUsedByChatIdAndCategory(Long chatId, String category, int limit) {
         Transaction transaction = null;
         try {
             Session session = sessionFactory.getCurrentSession();
@@ -164,11 +162,8 @@ public class FlashCardDao {
                             "ORDER BY c.showedCounter ASC", FlashCard.class)
                     .setParameter("chatId", chatId)
                     .setParameter("category", category)
-                    // fixme should be defined ins service
-                    .setMaxResults(10);
+                    .setMaxResults(limit);
             List<FlashCard> cards = typedQuery.getResultList();
-            // fixme should be shuffled ins service
-            Collections.shuffle(cards);
 
             transaction.commit();
             return cards;

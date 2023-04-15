@@ -8,6 +8,7 @@ import com.github.quiz.bot.service.KeyboardCreator;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -35,7 +36,8 @@ public class CommandHandler {
     }
 
     private Response startRandomQuiz(Long chatId) {
-        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatId(chatId);
+        List<FlashCard> cards = FlashCardDao.getLeastUsedByChatId(chatId, Response.QUIZ_SIZE);
+        Collections.shuffle(cards);
         return Response.createQuizResponse(chatId, cards, keyboardCreator);
     }
 

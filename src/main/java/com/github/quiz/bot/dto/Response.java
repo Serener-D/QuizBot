@@ -14,6 +14,8 @@ import java.util.List;
 @Builder
 public class Response {
 
+    public static final int QUIZ_SIZE = 10;
+
     private String message;
     private ReplyKeyboard replyMarkup;
 
