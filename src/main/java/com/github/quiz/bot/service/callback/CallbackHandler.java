@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 
 @RequiredArgsConstructor
@@ -25,10 +26,10 @@ public class CallbackHandler {
 
     public Response handle(Callback callback, Long chatId, @Nullable String arguments) {
         return switch (callback) {
-            case GET -> get(Long.parseLong(arguments));
+            case GET -> get(Optional.ofNullable(arguments).map(Long::parseLong).orElse(null));
             case NEXT_PAGE -> printPage(chatId);
             case NEXT_CARD -> printNextCard(chatId);
-            case DELETE -> delete(Long.parseLong(arguments));
+            case DELETE -> delete(Optional.ofNullable(arguments).map(Long::parseLong).orElse(null));
             case CATEGORY -> startCategoryQuiz(chatId, arguments);
         };
     }
