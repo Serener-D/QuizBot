@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -45,7 +46,10 @@ public class CommandHandler {
             return Response.createNoCardsSavedResponse();
         }
         Collections.shuffle(cards);
-        return Response.createQuizResponse(chatId, cards, keyboardCreator, flashCardDao);
+        Response response = Response.createQuizResponse(cards, keyboardCreator, flashCardDao);
+        conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.TAKING_QUIZ);
+        conversationStateHolder.putCardQueue(chatId, new LinkedList<>(cards));
+        return response;
     }
 
     private Response startCategoryQuiz(Long chatId) {
@@ -53,7 +57,7 @@ public class CommandHandler {
         if (categories.isEmpty()) {
             return Response.createNoCardsSavedResponse();
         }
-        InlineKeyboardMarkup keyboard = keyboardCreator.createCategoryKeyboard(categories);
+        InlineKeyboardMarkup keyboard = keyboardCreator.createCategoriesKeyboard(categories);
         return Response.builder()
                 .message("Select category:")
                 .replyMarkup(keyboard)

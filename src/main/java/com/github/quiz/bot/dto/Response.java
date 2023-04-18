@@ -24,8 +24,7 @@ public class Response {
         return Response.builder().message("NO_CARDS_SAVED_MESSAGE").build();
     }
 
-    public static Response createQuizResponse(Long chatId,
-                                              List<FlashCard> cards,
+    public static Response createQuizResponse(List<FlashCard> cards,
                                               KeyboardCreator keyboardCreator,
                                               FlashCardDao flashCardDao) {
         String text;
@@ -35,7 +34,7 @@ public class Response {
             flashCardDao.incrementShowedCounter(card);
 
             text = "Question:\n" + card.getQuestion();
-            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
+            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createNextCardKeyboard();
             responseBuilder.replyMarkup(keyboardMarkup);
         } else {
             text = NO_CARDS_SAVED_MESSAGE;

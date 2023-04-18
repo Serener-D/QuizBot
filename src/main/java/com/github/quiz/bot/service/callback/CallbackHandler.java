@@ -80,8 +80,10 @@ public class CallbackHandler {
         if (!cardsQueue.isEmpty() && cardsQueue instanceof LinkedList<FlashCard> cardsList) {
             FlashCard nextCard = cardsQueue.element();
             text += "\n\nNext question:\n" + nextCard.getQuestion();
-            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cardsList, chatId);
+            InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createNextCardKeyboard();
             responseBuilder.replyMarkup(keyboardMarkup);
+            conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.TAKING_QUIZ);
+            conversationStateHolder.putCardQueue(chatId, new LinkedList<>(cardsList));
         } else {
             conversationStateHolder.clearState(chatId);
             conversationStateHolder.clearCardQueue(chatId);
@@ -93,7 +95,9 @@ public class CallbackHandler {
     private Response startCategoryQuiz(Long chatId, String category) {
         List<FlashCard> cards = flashCardDao.getLeastUsedByChatIdAndCategory(chatId, category, Response.QUIZ_SIZE);
         Collections.shuffle(cards);
-        return Response.createQuizResponse(chatId, cards, keyboardCreator, flashCardDao);
+        conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.TAKING_QUIZ);
+        conversationStateHolder.putCardQueue(chatId, new LinkedList<>(cards));
+        return Response.createQuizResponse(cards, keyboardCreator, flashCardDao);
     }
 
 }

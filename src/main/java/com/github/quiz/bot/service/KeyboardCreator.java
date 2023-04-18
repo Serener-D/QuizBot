@@ -41,7 +41,7 @@ public class KeyboardCreator {
         return keyboardMarkup;
     }
 
-    public InlineKeyboardMarkup createCategoryKeyboard(List<String> categories) {
+    public InlineKeyboardMarkup createCategoriesKeyboard(List<String> categories) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
@@ -57,7 +57,7 @@ public class KeyboardCreator {
         return keyboardMarkup;
     }
 
-    public InlineKeyboardMarkup createRandomQuizKeyboard(List<FlashCard> cards, Long chatId) {
+    public InlineKeyboardMarkup createNextCardKeyboard() {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         InlineKeyboardButton button = InlineKeyboardButton.builder()
@@ -67,9 +67,6 @@ public class KeyboardCreator {
         List<InlineKeyboardButton> buttonRow = List.of(button);
         keyboard.add(buttonRow);
         keyboardMarkup.setKeyboard(keyboard);
-
-        conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.TAKING_QUIZ);
-        conversationStateHolder.putCardQueue(chatId, new LinkedList<>(cards));
         return keyboardMarkup;
     }
 
