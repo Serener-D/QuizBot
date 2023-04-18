@@ -70,7 +70,6 @@ public class CallbackHandler {
         Queue<FlashCard> cardsQueue = conversationStateHolder.getCardQueue(chatId);
         FlashCard previousCard = cardsQueue.poll();
 
-        // fixme refactor this
         String text = "Answer:\n";
         if (previousCard != null) {
             flashCardDao.incrementShowedCounter(previousCard);
