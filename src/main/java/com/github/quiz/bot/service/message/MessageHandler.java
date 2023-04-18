@@ -61,16 +61,16 @@ public class MessageHandler {
 
     private boolean isNewCardReceived(Update update) {
         Long chatId = update.getMessage().getChatId();
-        return !update.getMessage().isCommand() && (conversationStateHolder.getState(chatId) == null
-                || conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.IDLE);
-    }
-
-    private boolean isWaitingCategoryForNewCard(Long chatId) {
-        return conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.WAITING_CATEGORY;
+        return conversationStateHolder.getState(chatId) == null
+                || conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.IDLE;
     }
 
     private boolean isWaitingAnswerNewCard(Long chatId) {
         return conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.WAITING_CARD_ANSWER;
+    }
+
+    private boolean isWaitingCategoryForNewCard(Long chatId) {
+        return conversationStateHolder.getState(chatId) == ConversationStateHolder.ConversationState.WAITING_CATEGORY;
     }
 
 }
