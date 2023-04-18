@@ -14,7 +14,7 @@ import java.util.Queue;
 @RequiredArgsConstructor
 public class MessageHandler {
 
-    private static final String DEFAULT_RESPONSE = "Something went wrong";
+    private static final String DEFAULT_RESPONSE_MESSAGE = "Something went wrong";
 
     private final ConversationStateHolder conversationStateHolder;
     private final FlashCardDao flashCardDao;
@@ -22,41 +22,47 @@ public class MessageHandler {
     @SneakyThrows
     public Response handle(Update update) {
         Long chatId = update.getMessage().getChatId();
-        String message = DEFAULT_RESPONSE;
+        String responseMessage = DEFAULT_RESPONSE_MESSAGE;
         if (isNewCardReceived(update)) {
-            saveCardAnswerQuestionToContext(update);
-            message = "Enter card answer";
+            responseMessage = saveCardAnswerQuestionToContext(update);
         } else if (isWaitingAnswerNewCard(chatId)) {
-            saveCardAnswerToContext(update);
-            message = "Enter category";
+            responseMessage = saveCardAnswerToContext(update);
         } else if (isWaitingCategoryForNewCard(chatId)) {
-            saveCardToDatabase(update);
-            message = "FlashCard saved";
+            responseMessage = saveCardToDatabase(update);
         }
-        return Response.builder().message(message).build();
+        return Response.builder().message(responseMessage).build();
     }
 
-    private void saveCardAnswerQuestionToContext(Update update) {
+    private String saveCardAnswerQuestionToContext(Update update) {
         Long chatId = update.getMessage().getChatId();
         conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.WAITING_CARD_ANSWER);
         Queue<FlashCard> flashCardQueue = new LinkedList<>();
         flashCardQueue.add(FlashCard.builder().chatId(chatId).question(update.getMessage().getText()).build());
         conversationStateHolder.putCardQueue(chatId, flashCardQueue);
+        return "Enter card answer";
     }
 
-    private void saveCardAnswerToContext(Update update) {
+    private String saveCardAnswerToContext(Update update) {
         Long chatId = update.getMessage().getChatId();
         conversationStateHolder.putState(chatId, ConversationStateHolder.ConversationState.WAITING_CATEGORY);
         conversationStateHolder.getCardQueue(chatId).element().setAnswer(update.getMessage().getText());
+        return "Enter category";
     }
 
-    private void saveCardToDatabase(Update update) {
+    private String saveCardToDatabase(Update update) {
         Long chatId = update.getMessage().getChatId();
+        String responseMessage;
         FlashCard flashCard = conversationStateHolder.getCardQueue(chatId).poll();
-        flashCard.setCategory(update.getMessage().getText());
-        flashCardDao.save(flashCard);
+        if (flashCard != null) {
+            flashCard.setCategory(update.getMessage().getText());
+            flashCardDao.save(flashCard);
+            responseMessage = "FlashCard saved";
+        } else {
+            responseMessage = DEFAULT_RESPONSE_MESSAGE;
+        }
         conversationStateHolder.clearState(chatId);
         conversationStateHolder.clearCardQueue(chatId);
+        return responseMessage;
     }
 
     private boolean isNewCardReceived(Update update) {
