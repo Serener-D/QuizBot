@@ -15,9 +15,14 @@ import java.util.List;
 public class Response {
 
     public static final int QUIZ_SIZE = 10;
+    public static final String NO_CARDS_SAVED_MESSAGE = "You don't have any cards saved";
 
     private String message;
     private ReplyKeyboard replyMarkup;
+
+    public static Response createNoCardsSavedResponse() {
+        return Response.builder().message("NO_CARDS_SAVED_MESSAGE").build();
+    }
 
     public static Response createQuizResponse(Long chatId,
                                               List<FlashCard> cards,
@@ -33,7 +38,7 @@ public class Response {
             InlineKeyboardMarkup keyboardMarkup = keyboardCreator.createRandomQuizKeyboard(cards, chatId);
             responseBuilder.replyMarkup(keyboardMarkup);
         } else {
-            text = "You don't have any cards saved";
+            text = NO_CARDS_SAVED_MESSAGE;
         }
         return responseBuilder.message(text).build();
     }

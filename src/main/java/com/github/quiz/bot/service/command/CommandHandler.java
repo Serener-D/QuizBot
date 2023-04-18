@@ -29,6 +29,9 @@ public class CommandHandler {
 
     private Response getCards(Long chatId) {
         List<FlashCard> cards = flashCardDao.getAllByChatId(chatId);
+        if (cards.isEmpty()) {
+            return Response.createNoCardsSavedResponse();
+        }
         InlineKeyboardMarkup keyboard = keyboardCreator.createAllCardsKeyboard(cards, chatId);
         return Response.builder()
                 .message("Saved cards:")
@@ -38,12 +41,18 @@ public class CommandHandler {
 
     private Response startRandomQuiz(Long chatId) {
         List<FlashCard> cards = flashCardDao.getLeastUsedByChatId(chatId, Response.QUIZ_SIZE);
+        if (cards.isEmpty()) {
+            return Response.createNoCardsSavedResponse();
+        }
         Collections.shuffle(cards);
         return Response.createQuizResponse(chatId, cards, keyboardCreator, flashCardDao);
     }
 
     private Response startCategoryQuiz(Long chatId) {
         List<String> categories = flashCardDao.getAllCategoriesByChatId(chatId);
+        if (categories.isEmpty()) {
+            return Response.createNoCardsSavedResponse();
+        }
         InlineKeyboardMarkup keyboard = keyboardCreator.createCategoryKeyboard(categories);
         return Response.builder()
                 .message("Select category:")
