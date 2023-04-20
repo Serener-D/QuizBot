@@ -20,7 +20,13 @@ public class Main {
         ConversationStateHolder conversationStateHolder = new ConversationStateHolder();
         KeyboardCreator keyboardCreator = new KeyboardCreator(conversationStateHolder);
 
-        Bot bot = new Bot("6098897440:AAFiAazmAHe_ud-blP21M3LAsMOejrbH4hQ",
+        String botToken;
+        try {
+            botToken = args[0];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new RuntimeException("You should pass a botToken!", e);
+        }
+        Bot bot = new Bot(botToken,
                 new CommandHandler(conversationStateHolder, keyboardCreator, flashCardDao),
                 new CallbackHandler(conversationStateHolder, keyboardCreator, flashCardDao),
                 new MessageHandler(conversationStateHolder, flashCardDao));
@@ -30,4 +36,5 @@ public class Main {
 
         System.out.println("Hello world!");
     }
+
 }
