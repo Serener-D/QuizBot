@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class Bot extends TelegramLongPollingBot {
@@ -39,8 +40,9 @@ public class Bot extends TelegramLongPollingBot {
         } else if (isCallback(update)) {
             chatId = update.getCallbackQuery().getMessage().getChatId();
             String[] data = update.getCallbackQuery().getData().split(" ");
-            String arguments = data.length > 1 ? data[1] : null;
-            response = callbackHandler.handle(Callback.valueOf(data[0]), chatId, arguments);
+            Callback callback = Callback.valueOf(data[0]);
+            String arguments = String.join(" ", Arrays.stream(data).skip(1).toArray(String[]::new));
+            response = callbackHandler.handle(callback, chatId, arguments);
         } else {
             chatId = update.getMessage().getChatId();
             response = messageHandler.handle(update);
