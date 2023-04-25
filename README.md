@@ -2,6 +2,9 @@
 
 This is a telegram bot I wrote when preparing for OCP 17. It saves questions and answers to them, which can be later asked in a form of quiz. It might be helpful when preparing for some exam.
 
+#### My deployed bot: 
+https://t.me/learn_quiz_bot
+
 #### How to deploy:
 1. Create your bot with [BotFather](https://t.me/BotFather) and define 4 commands: <code>/get_card</code>, <code>/random_quiz</code>, <code>/quiz</code>, <code>/stop</code>. You should also remember your bot's token received from BotFather, you will need it in step 3
 2. Compile the project with maven. I've included maven-assembly-plugin, so you can execute <code>mvn clean compile assembly:single</code>
