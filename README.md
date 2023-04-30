@@ -23,3 +23,4 @@ https://t.me/learn_quiz_bot
 
 #### Known bugs:
 - Making too long question/answer, so that telegram splits it in two messages
+- Using buttons from previous conversations may lead to unexpected results
