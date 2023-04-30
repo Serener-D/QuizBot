@@ -1,6 +1,6 @@
 ## QuizBot
 
-This is a telegram bot I wrote when preparing for OCP 17. It saves questions and answers to them, which can be later asked in a form of quiz. It might be helpful when preparing for some exam.
+This is a telegram bot I made when preparing for OCP 17. It saves questions and answers to them, which can be later asked in a form of quiz. It might be helpful when preparing for some exam.
 
 #### My deployed bot: 
 https://t.me/learn_quiz_bot
